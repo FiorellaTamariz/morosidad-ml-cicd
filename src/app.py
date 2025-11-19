@@ -61,7 +61,7 @@ def metrics():
     except:
         return jsonify({'error': 'Métricas no disponibles'}), 404
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'GET'])
 def predict():
     try:
         datos = request.get_json()
@@ -104,6 +104,7 @@ def obtener_recomendacion(categoria):
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=5000, debug=False)
+
 
 
 

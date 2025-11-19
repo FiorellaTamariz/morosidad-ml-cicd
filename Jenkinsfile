@@ -71,7 +71,7 @@ pipeline {
                     docker stop %PROD_CONTAINER% || exit 0
                     docker rm %PROD_CONTAINER% || exit 0
                     docker run -d --name %PROD_CONTAINER% -p 5000:5000 %IMAGE_NAME%:latest
-                    curl -f http://localhost:5001/health
+                    curl -f http://localhost:5000/health
                 """
             }
         }
@@ -86,6 +86,7 @@ pipeline {
         }
     }
 }
+
 
 
 

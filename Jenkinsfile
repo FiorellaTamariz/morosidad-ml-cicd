@@ -2,9 +2,13 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "morosidad-api"
+        IMAGE_NAME     = "morosidad-api"
         TEST_CONTAINER = "morosidad-test"
         PROD_CONTAINER = "morosidad-prod"
+
+        // Usa la instalación de Python configurada en Jenkins
+        PY = "${tool 'Python3'}\\python.exe"
+        PIP = "${tool 'Python3'}\\python.exe -m pip"
     }
 
     stages {
@@ -20,8 +24,8 @@ pipeline {
             steps {
                 echo "Instalando dependencias..."
                 bat """
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
+                    %PY% -m pip install --upgrade pip
+                    %PY% -m pip install -r requirements.txt
                 """
             }
         }
@@ -29,14 +33,14 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo "Ejecutando tests..."
-                bat "pytest tests/ -v"
+                bat "%PY% -m pytest tests/ -v"
             }
         }
 
         stage('Train Model') {
             steps {
                 echo "Entrenando modelo..."
-                bat "python src/train.py"
+                bat "%PY% src/train.py"
             }
         }
 
@@ -51,8 +55,8 @@ pipeline {
             steps {
                 echo "Probando contenedor..."
                 bat """
-                    docker stop %TEST_CONTAINER% || true
-                    docker rm %TEST_CONTAINER% || true
+                    docker stop %TEST_CONTAINER% || exit 0
+                    docker rm %TEST_CONTAINER% || exit 0
                     docker run -d --name %TEST_CONTAINER% -p 5001:5000 %IMAGE_NAME%:latest
                     ping -n 10 127.0.0.1 >NUL
                     curl -f http://localhost:5001/health
@@ -64,8 +68,8 @@ pipeline {
             steps {
                 echo "Desplegando contenedor en producción..."
                 bat """
-                    docker stop %PROD_CONTAINER% || true
-                    docker rm %PROD_CONTAINER% || true
+                    docker stop %PROD_CONTAINER% || exit 0
+                    docker rm %PROD_CONTAINER% || exit 0
                     docker run -d --name %PROD_CONTAINER% -p 5000:5000 %IMAGE_NAME%:latest
                 """
             }

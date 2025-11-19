@@ -10,10 +10,15 @@ print("Cargando modelo...")
 with open('models/modelo_morosidad.pkl', 'rb') as f:
     modelo = pickle.load(f)
 
-with open('models/feature_names.json', 'r') as f:
-    feature_names = json.load(f)
+modelo = None
 
-print("Modelo cargado exitosamente")
+def load_model():
+    global modelo
+    if modelo is None:
+        print("🔄 Cargando modelo...")
+        with open('models/modelo_morosidad.pkl', 'rb') as f:
+            modelo = pickle.load(f)
+        print("✅ Modelo cargado exitosamente")
 
 CATEGORIAS = {
     0: "Al día",
@@ -106,4 +111,5 @@ def obtener_recomendacion(categoria):
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=5000, debug=False)
+
 

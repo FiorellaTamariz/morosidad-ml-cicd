@@ -23,7 +23,7 @@ def preparar_datos(ruta_csv):
     df['categoria_mora'] = df['meses_mora'].apply(categorizar_mora)
     
     features = ['monto_original', 'monto_actual', 'ratio_deuda', 
-                'dias_desde_vencimiento', 'meses_mora']
+                'dias_desde_vencimiento']
     
     X = df[features]
     y = df['categoria_mora']
@@ -33,4 +33,5 @@ def preparar_datos(ruta_csv):
 if __name__ == "__main__":
     X, y, df = preparar_datos('data/datos_norte_andino.csv')
     print(f"Dataset preparado: {X.shape[0]} registros, {X.shape[1]} features")
+
     print(f"Distribución de categorías:\\n{y.value_counts()}")

@@ -6,14 +6,14 @@ import pandas as pd
 
 app = Flask(__name__)
 
-print("🔄 Cargando modelo...")
+print("Cargando modelo...")
 with open('models/modelo_morosidad.pkl', 'rb') as f:
     modelo = pickle.load(f)
 
 with open('models/feature_names.json', 'r') as f:
     feature_names = json.load(f)
 
-print("✅ Modelo cargado exitosamente")
+print("Modelo cargado exitosamente")
 
 CATEGORIAS = {
     0: "Al día",
@@ -25,7 +25,7 @@ CATEGORIAS = {
 @app.route('/')
 def home():
     return """
-    <h1>🏦 API de Predicción de Morosidad - Norte Andino SAC</h1>
+    <h1>API de Predicción de Morosidad - Norte Andino SAC</h1>
     <p>Endpoints disponibles:</p>
     <ul>
         <li><b>POST /predict</b> - Predecir categoría de morosidad</li>
@@ -104,4 +104,5 @@ def obtener_recomendacion(categoria):
     return recomendaciones[categoria]
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -15,4 +15,5 @@ COPY data/ ./data/
 
 EXPOSE 5000
 
-CMD ["python", "src/app.py"]
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

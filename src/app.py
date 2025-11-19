@@ -64,7 +64,6 @@ def metrics():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        load_model()
         datos = request.get_json()
         
         for feature in feature_names:
@@ -105,6 +104,7 @@ def obtener_recomendacion(categoria):
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=5000, debug=False)
+
 
 
 

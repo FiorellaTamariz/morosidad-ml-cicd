@@ -7,16 +7,16 @@ import json
 from preprocessing import preparar_datos
 
 def entrenar_modelo():
-    print("📊 Cargando y preparando datos...")
+    print("Cargando y preparando datos...")
     X, y, df = preparar_datos('data/datos_norte_andino.csv')
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
     
-    print(f"✅ Train: {len(X_train)} | Test: {len(X_test)}")
+    print(f"Train: {len(X_train)} | Test: {len(X_test)}")
 
-    print("\\n🤖 Entrenando Random Forest...")
+    print("\\n Entrenando Random Forest...")
     modelo = RandomForestClassifier(
         n_estimators=100,
         max_depth=10,
@@ -26,14 +26,14 @@ def entrenar_modelo():
     
     modelo.fit(X_train, y_train)
 
-    print("\\n📈 Evaluando modelo...")
+    print("\\n Evaluando modelo...")
     y_pred = modelo.predict(X_test)
     
     print("\\n--- Reporte de Clasificación ---")
     print(classification_report(y_test, y_pred, 
                                 target_names=['Al día', 'Leve', 'Grave', 'Crítica']))
 
-    print("\\n💾 Guardando modelo...")
+    print("\\n Guardando modelo...")
     with open('models/modelo_morosidad.pkl', 'wb') as f:
         pickle.dump(modelo, f)
     
@@ -49,10 +49,11 @@ def entrenar_modelo():
     with open('models/metricas.json', 'w') as f:
         json.dump(metricas, f, indent=2)
     
-    print(f"\\n✅ Modelo entrenado con accuracy: {metricas['accuracy']:.2%}")
-    print("✅ Archivos guardados en /models")
+    print(f"\\nModelo entrenado con accuracy: {metricas['accuracy']:.2%}")
+    print("Archivos guardados en /models")
     
     return modelo, metricas
 
 if __name__ == "__main__":
+
     entrenar_modelo()

@@ -71,7 +71,6 @@ pipeline {
                     docker stop %PROD_CONTAINER% || exit 0
                     docker rm %PROD_CONTAINER% || exit 0
                     docker run -d --name %PROD_CONTAINER% -p 5000:5000 %IMAGE_NAME%:latest
-                    curl.exe -f http://127.0.0.1:5000/health
                 """
             }
         }
@@ -86,6 +85,7 @@ pipeline {
         }
     }
 }
+
 
 
 

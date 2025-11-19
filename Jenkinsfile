@@ -6,9 +6,8 @@ pipeline {
         TEST_CONTAINER = "morosidad-test"
         PROD_CONTAINER = "morosidad-prod"
 
-        // Usa la instalación de Python configurada en Jenkins
-        PY = "${tool 'Python3'}\\python.exe"
-        PIP = "${tool 'Python3'}\\python.exe -m pip"
+        // Ruta fija de Python en tu máquina
+        PY = "C:\\Users\\fiore\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
     }
 
     stages {
@@ -85,3 +84,4 @@ pipeline {
         }
     }
 }
+

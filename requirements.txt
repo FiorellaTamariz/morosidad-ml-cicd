@@ -2,4 +2,5 @@ pandas==2.0.3
 scikit-learn==1.4.2
 numpy==1.26.4
 flask==2.3.2
+gunicorn
 pytest==7.4.0

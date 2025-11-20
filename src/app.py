@@ -65,36 +65,134 @@ curl -X POST http://localhost:5000/predict \\
     """)
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({
-        'status': 'healthy',
-        'model_loaded': modelo is not None
-    })
+    if request.args.get("raw") == "1":
+        return jsonify({
+            'status': 'healthy',
+            'model_loaded': modelo is not None
+        })
+
+    return render_template_string("""
+    <style>
+        body { font-family: Arial; margin: 40px; max-width: 600px; }
+        h2 { color: #0A5275; }
+        .card {
+            background: #f6f8fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #d0d7de;
+        }
+        .ok { color: green; font-weight: bold; }
+    </style>
+
+    <h2>🩺 Estado del servicio (Health Check)</h2>
+
+    <div class="card">
+        <p><b>Estado:</b> <span class="ok">Healthy ✔</span></p>
+        <p><b>Modelo cargado:</b> {{ cargado }}</p>
+    </div>
+
+    <p style="margin-top:20px;">Ver JSON: <a href="/health?raw=1">/health?raw=1</a></p>
+    <p><a href="/">Volver al inicio</a></p>
+    """, cargado="Sí" if modelo is not None else "No")
 
 @app.route('/metrics', methods=['GET'])
 def metrics():
     try:
         with open('models/metricas.json', 'r') as f:
             metricas = json.load(f)
-        return jsonify(metricas)
     except:
-        return jsonify({'error': 'Métricas no disponibles'}), 404
+        if request.args.get("raw") == "1":
+            return jsonify({'error': 'Métricas no disponibles'}), 404
+        
+        return render_template_string("""
+        <h2 style="color:#A40000;">❌ Métricas no disponibles</h2>
+        <p>El archivo <b>metricas.json</b> no se encontró.</p>
+        <p><a href="/">Volver</a></p>
+        """)
+
+    # Si ?raw=1 → envío JSON puro
+    if request.args.get("raw") == "1":
+        return jsonify(metricas)
+
+    # HTML Bonito
+    return render_template_string("""
+    <style>
+        body { font-family: Arial; margin: 40px; max-width: 700px; }
+        h2 { color: #0A5275; }
+        .card { background: #f6f8fa; padding: 20px; border-radius: 10px; border: 1px solid #d0d7de; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; }
+        th { background: #e8eef3; text-align: left; }
+    </style>
+
+    <h2>📊 Métricas del Modelo</h2>
+
+    <div class="card">
+        <table>
+            <tr><th>Métrica</th><th>Valor</th></tr>
+            {% for key, value in metricas.items() %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <p style="margin-top:20px;">Ver JSON: <a href="/metrics?raw=1">/metrics?raw=1</a></p>
+
+    <p><a href="/">Volver al inicio</a></p>
+    """, metricas=metricas)
 
 @app.route('/predict', methods=['POST', 'GET'])
 def predict():
+    if request.method == 'GET':
+        return render_template_string("""
+        <style>
+            body { font-family: Arial; margin: 40px; max-width: 500px; }
+            h2 { color: #0A5275; }
+            label { display: block; margin-top: 15px; font-weight: bold; }
+            input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; margin-top: 5px; }
+            button { margin-top: 20px; padding: 12px; width: 100%; background-color: #0A5275; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+            button:hover { background-color: #083d57; }
+            pre { background: #f0f0f0; padding: 15px; border-radius: 8px; }
+        </style>
+
+        <h2>🔍 Probar predicción de morosidad</h2>
+
+        <form action="/predict" method="post">
+            {% for feature in feature_names %}
+                <label>{{ feature }}</label>
+                <input name="{{ feature }}" type="number" step="any" required />
+            {% endfor %}
+            <button type="submit">Predecir</button>
+        </form>
+
+        <p style="margin-top:40px;">Volver a <a href="/">Inicio</a></p>
+        """, feature_names=feature_names)
+
+    # --------------------------
+    #   POST (no tocado)
+    # --------------------------
     try:
-        datos = request.get_json()
-        
+        datos = request.get_json() or request.form.to_dict()
+
+        # Convertir str→float si vienen del formulario
+        for k in datos:
+            try:
+                datos[k] = float(datos[k])
+            except:
+                pass
+
         for feature in feature_names:
             if feature not in datos:
-                return jsonify({
-                    'error': f'Falta el campo: {feature}'
-                }), 400
-        
+                return jsonify({'error': f'Falta el campo: {feature}'}), 400
+
         X_pred = pd.DataFrame([datos])[feature_names]
         
         prediccion = modelo.predict(X_pred)[0]
         probabilidades = modelo.predict_proba(X_pred)[0]
-        
+
         respuesta = {
             'categoria_predicha': int(prediccion),
             'descripcion': CATEGORIAS[prediccion],
@@ -104,9 +202,8 @@ def predict():
             },
             'recomendacion': obtener_recomendacion(prediccion)
         }
-        
         return jsonify(respuesta)
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

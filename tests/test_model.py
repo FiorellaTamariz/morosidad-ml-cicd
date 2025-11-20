@@ -35,8 +35,7 @@ def test_prediccion_formato():
         'monto_original': 5000,
         'monto_actual': 3000,
         'ratio_deuda': 0.6,
-        'dias_desde_vencimiento': 45,
-        'meses_mora': 1
+        'dias_desde_vencimiento': 45
     }])
     
     prediccion = modelo.predict(X_test)

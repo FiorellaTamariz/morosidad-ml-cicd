@@ -3,6 +3,7 @@ import pickle
 import json
 import numpy as np
 import pandas as pd
+from benchmark_hpc import benchmark_hpc
 
 app = Flask(__name__)
 
@@ -215,6 +216,15 @@ def obtener_recomendacion(categoria):
         3: "Mora crítica. Iniciar proceso de cobranza inmediata."
     }
     return recomendaciones[categoria]
+
+
+@app.route('/benchmark', methods=['GET'])
+def benchmark():
+    try:
+        resultados = benchmark_hpc()
+        return jsonify(resultados)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
 

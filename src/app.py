@@ -218,13 +218,13 @@ def obtener_recomendacion(categoria):
     return recomendaciones[categoria]
 
 
-@app.route('/benchmark', methods=['GET'])
+'''@app.route('/benchmark', methods=['GET'])
 def benchmark():
     try:
         resultados = benchmark_hpc()
         return jsonify(resultados)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500'''
 
 if __name__ == '__main__':
 

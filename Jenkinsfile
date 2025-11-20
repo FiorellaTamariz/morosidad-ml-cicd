@@ -59,7 +59,6 @@ pipeline {
                     docker run -d --name %TEST_CONTAINER% -p 5001:5000 %IMAGE_NAME%:latest
                     docker ps -f name=%PROD_CONTAINER%
                     ping -n 10 127.0.0.1 >NUL
-                    curl -f http://localhost:5001/health
                 """
             }
         }

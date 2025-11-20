@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template_string
 import pickle
 import json
 import numpy as np
@@ -22,28 +22,47 @@ CATEGORIAS = {
 
 @app.route('/')
 def home():
-    return """
-    <h1>API de Predicción de Morosidad - Norte Andino SAC</h1>
-    <p>Endpoints disponibles:</p>
-    <ul>
-        <li><b>POST /predict</b> - Predecir categoría de morosidad</li>
-        <li><b>GET /health</b> - Estado del servicio</li>
-        <li><b>GET /metrics</b> - Métricas del modelo</li>
-    </ul>
-    
-    <h3>Ejemplo de uso:</h3>
-    <pre>
-    curl -X POST http://localhost:5000/predict \\\\
-      -H "Content-Type: application/json" \\\\
-      -d '{
-        "monto_original": 5000,
-        "monto_actual": 3000,
-        "ratio_deuda": 0.6,
-        "dias_desde_vencimiento": 45
-      }'
-    </pre>
-    """
+    return render_template_string("""
+    <style>
+        body { font-family: Arial; margin: 40px; max-width: 900px; }
+        h1 { color: #0A5275; }
+        .card { padding: 20px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px; }
+        a { color: #0A5275; font-weight: bold; }
+    </style>
 
+    <h1>API de Predicción de Morosidad - Norte Andino SAC</h1>
+    <p>Interfaz visual para pruebas rápidas</p>
+
+    <div class="card">
+        <h3>🔍 Predicción (POST)</h3>
+        <p>Formulario para probar la predicción del modelo</p>
+        <a href="/predict">Ir al formulario</a>
+    </div>
+
+    <div class="card">
+        <h3>📊 Métricas del modelo (GET)</h3>
+        <a href="/metrics">Ver métricas</a>
+    </div>
+
+    <div class="card">
+        <h3>🩺 Estado del servicio (GET)</h3>
+        <a href="/health">Ver estado</a>
+    </div>
+
+    <div class="card">
+        <h3>📌 Ejemplo en cURL</h3>
+        <pre>
+curl -X POST http://localhost:5000/predict \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "monto_original": 5000,
+    "monto_actual": 3000,
+    "ratio_deuda": 0.6,
+    "dias_desde_vencimiento": 45
+  }'
+        </pre>
+    </div>
+    """)
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({

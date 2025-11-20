@@ -175,7 +175,7 @@ def predict():
     #   POST (no tocado)
     # --------------------------
     try:
-        datos = request.get_json() or request.form.to_dict()
+        datos = request.get_json(silent=True) or request.form.to_dict()
 
         # Convertir str→float si vienen del formulario
         for k in datos:
